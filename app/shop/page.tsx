@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { SlidersHorizontal, X } from "lucide-react";
 
@@ -10,29 +10,30 @@ import ProductGrid from "@/components/product/ProductGrid";
 
 const SIZES = ["S", "M", "L", "XL", "XXL"];
 
-export default function ShopPage() {
+function ShopContent() {
   const searchParams = useSearchParams();
 
- const [category, setCategory] = useState("");
-const [price, setPrice] = useState("");
-const [size, setSize] = useState("");
-const [sort, setSort] = useState("Newest");
-const [newOnly, setNewOnly] = useState(false);
-const [filtersOpen, setFiltersOpen] = useState(false);
- useEffect(() => {
-  const categoryFromUrl =
-    searchParams.get("category") || "";
+  const [category, setCategory] = useState("");
+  const [price, setPrice] = useState("");
+  const [size, setSize] = useState("");
+  const [sort, setSort] = useState("Newest");
+  const [newOnly, setNewOnly] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
-  const newFromUrl =
-    searchParams.get("new") === "true";
+  useEffect(() => {
+    const categoryFromUrl =
+      searchParams.get("category") || "";
 
-  setCategory(categoryFromUrl);
-  setNewOnly(newFromUrl);
+    const newFromUrl =
+      searchParams.get("new") === "true";
 
-  if (newFromUrl) {
-    setSort("Newest");
-  }
-}, [searchParams]);
+    setCategory(categoryFromUrl);
+    setNewOnly(newFromUrl);
+
+    if (newFromUrl) {
+      setSort("Newest");
+    }
+  }, [searchParams]);
 
   const toggleSize = (itemSize: string) => {
     setSize((current) =>
@@ -93,8 +94,7 @@ const [filtersOpen, setFiltersOpen] = useState(false);
             </div>
           </div>
 
-          {/* Quick Size Select — prominent strip above the grid,
-              syncs with the same `size` state as the sidebar filter */}
+          {/* Quick Size Select */}
           <div className="mb-12 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-sunken)] px-6 py-6 text-center sm:py-7">
 
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-[var(--muted)] sm:text-sm">
@@ -120,6 +120,7 @@ const [filtersOpen, setFiltersOpen] = useState(false);
 
             {size && (
               <button
+                type="button"
                 onClick={() => setSize("")}
                 className="mt-4 text-sm text-[var(--accent)] hover:underline"
               >
@@ -131,7 +132,7 @@ const [filtersOpen, setFiltersOpen] = useState(false);
           {/* Shop Layout */}
           <div className="grid grid-cols-1 gap-10 lg:grid-cols-4">
 
-            {/* Sidebar Overlay — mobile only */}
+            {/* Mobile Sidebar Overlay */}
             <div
               onClick={() => setFiltersOpen(false)}
               className={`fixed inset-0 z-40 bg-black/50 transition-opacity lg:hidden ${
@@ -254,6 +255,7 @@ const [filtersOpen, setFiltersOpen] = useState(false);
                 </div>
 
                 <button
+                  type="button"
                   onClick={() => setCategory("")}
                   className="mt-4 text-sm text-[var(--accent)] hover:underline"
                 >
@@ -261,7 +263,6 @@ const [filtersOpen, setFiltersOpen] = useState(false);
                 </button>
               </div>
 
-              {/* Divider */}
               <hr className="stitch-divider my-8" />
 
               {/* Price */}
@@ -314,6 +315,7 @@ const [filtersOpen, setFiltersOpen] = useState(false);
                 </div>
 
                 <button
+                  type="button"
                   onClick={() => setPrice("")}
                   className="mt-4 text-sm text-[var(--accent)] hover:underline"
                 >
@@ -321,7 +323,6 @@ const [filtersOpen, setFiltersOpen] = useState(false);
                 </button>
               </div>
 
-              {/* Divider */}
               <hr className="stitch-divider my-8" />
 
               {/* Size */}
@@ -332,29 +333,28 @@ const [filtersOpen, setFiltersOpen] = useState(false);
 
                 <div className="grid grid-cols-2 gap-3">
 
-                  {SIZES.map(
-                    (itemSize) => (
-                      <button
-                        key={itemSize}
-                        type="button"
-                        onClick={() =>
-                          toggleSize(itemSize)
-                        }
-                        className={`rounded-[var(--radius-sm)] border py-2 font-mono text-sm transition ${
-                          size === itemSize
-                            ? "border-[var(--accent)] bg-[var(--accent)] text-white"
-                            : "border-[var(--border-strong)] text-[var(--foreground)] hover:border-[var(--accent)] hover:text-[var(--accent)]"
-                        }`}
-                      >
-                        {itemSize}
-                      </button>
-                    )
-                  )}
+                  {SIZES.map((itemSize) => (
+                    <button
+                      key={itemSize}
+                      type="button"
+                      onClick={() =>
+                        toggleSize(itemSize)
+                      }
+                      className={`rounded-[var(--radius-sm)] border py-2 font-mono text-sm transition ${
+                        size === itemSize
+                          ? "border-[var(--accent)] bg-[var(--accent)] text-white"
+                          : "border-[var(--border-strong)] text-[var(--foreground)] hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                      }`}
+                    >
+                      {itemSize}
+                    </button>
+                  ))}
 
                 </div>
 
                 {size && (
                   <button
+                    type="button"
                     onClick={() => setSize("")}
                     className="mt-4 text-sm text-[var(--accent)] hover:underline"
                   >
@@ -369,6 +369,7 @@ const [filtersOpen, setFiltersOpen] = useState(false);
                   <hr className="stitch-divider my-8" />
 
                   <div className="rounded-[var(--radius-sm)] bg-[#14120F] p-4 text-[#F2EEE6]">
+
                     <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#9B9384]">
                       Collection
                     </p>
@@ -378,6 +379,7 @@ const [filtersOpen, setFiltersOpen] = useState(false);
                     </p>
 
                     <button
+                      type="button"
                       onClick={() => {
                         setNewOnly(false);
                         window.location.href =
@@ -387,6 +389,7 @@ const [filtersOpen, setFiltersOpen] = useState(false);
                     >
                       View All Products
                     </button>
+
                   </div>
                 </>
               )}
@@ -408,7 +411,7 @@ const [filtersOpen, setFiltersOpen] = useState(false);
         </section>
       </main>
 
-      {/* Floating Filters Trigger — mobile only */}
+      {/* Mobile Filters */}
       <button
         type="button"
         onClick={() => setFiltersOpen(true)}
@@ -421,5 +424,32 @@ const [filtersOpen, setFiltersOpen] = useState(false);
 
       <Footer />
     </>
+  );
+}
+
+/*
+ * Next.js 16 requires useSearchParams() to be
+ * rendered inside a Suspense boundary during
+ * production prerendering.
+ */
+export default function ShopPage() {
+  return (
+    <Suspense
+      fallback={
+        <>
+          <Header />
+
+          <main className="flex min-h-[70vh] items-center justify-center bg-[var(--background)] px-6">
+            <p className="font-mono text-sm uppercase tracking-[0.12em] text-[var(--muted)]">
+              Loading ALVERIQ...
+            </p>
+          </main>
+
+          <Footer />
+        </>
+      }
+    >
+      <ShopContent />
+    </Suspense>
   );
 }

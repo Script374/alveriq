@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
@@ -42,7 +42,7 @@ const statuses = [
   "Delivered",
 ];
 
-export default function OrderSuccessPage() {
+function OrderSuccessContent() {
   const searchParams = useSearchParams();
 
   const [order, setOrder] = useState<Order | null>(null);
@@ -449,5 +449,29 @@ export default function OrderSuccessPage() {
 
       <Footer />
     </>
+  );
+}
+
+/* ================= PAGE WITH SUSPENSE ================= */
+
+export default function OrderSuccessPage() {
+  return (
+    <Suspense
+      fallback={
+        <>
+          <Header />
+
+          <main className="flex min-h-[70vh] items-center justify-center bg-[var(--background)] px-6">
+            <p className="font-mono text-sm uppercase tracking-[0.12em] text-[var(--muted)]">
+              Loading your order...
+            </p>
+          </main>
+
+          <Footer />
+        </>
+      }
+    >
+      <OrderSuccessContent />
+    </Suspense>
   );
 }
